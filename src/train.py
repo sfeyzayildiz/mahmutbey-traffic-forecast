@@ -10,7 +10,6 @@ Every finished run is appended to results.csv, so the script can be stopped and 
 
 Usage
   python -m src.train --out results                         # everything
-  python -m src.train --out results --ablations reduced     # extra feature set (no weather, no fuel)
   python -m src.train --out results --stage test            # only the final test runs
   python -m src.train --out results --quick                 # tiny smoke test (1 seed, few epochs)
 '''
@@ -73,8 +72,6 @@ def drop_cols(columns, ablation):
         cols=[c for c in cols if not c.startswith(('temperature', 'rain', 'snowfall', 'wind_speed'))]
     elif ablation=='no_fuel':
         cols=[c for c in cols if c!='fuel_panic']
-    elif ablation=='reduced':                                # no weather and no fuel events
-        cols=drop_cols(drop_cols(cols, 'no_weather'), 'no_fuel')
     return cols
 
 
@@ -148,12 +145,12 @@ def run_one(df, data, stage, month, model, h, ablation, seed, quick):
     return res, pred
 
 
-def plan(stages, quick, ablations=None):
+def plan(stages, quick):
     seeds=SEEDS[:1] if quick else SEEDS
     runs=[]
     for stage in stages:
         months=[None] if stage=='test' else WF_MONTHS
-        abls=ablations or (ABLATIONS if stage=='test' else WF_ABLATIONS)
+        abls=ABLATIONS if stage=='test' else WF_ABLATIONS
         sds=seeds if stage=='test' else seeds[:1]
         for month, h in itertools.product(months, HORIZONS):
             runs.append((stage, month, 'persistence', h, 'full', 0))
@@ -169,7 +166,6 @@ def main():
     ap.add_argument('--stage', choices=['all', 'test', 'walkforward'], default='all')
     ap.add_argument('--quick', action='store_true')
     ap.add_argument('--no-mlflow', action='store_true')
-    ap.add_argument('--ablations', default=None, help='comma-separated feature sets, e.g. reduced (default: the standard sets)')
     args=ap.parse_args()
 
     out=Path(args.out); (out/'predictions').mkdir(parents=True, exist_ok=True)
@@ -191,7 +187,7 @@ def main():
     df=pd.read_parquet(ROOT/'data'/'processed'/'dataset.parquet')
     data={h:horizon_dataset(df, h) for h in HORIZONS}
     stages=['test', 'walkforward'] if args.stage=='all' else [args.stage]
-    runs=plan(stages, args.quick, args.ablations.split(',') if args.ablations else None)
+    runs=plan(stages, args.quick)
     if args.quick:
         runs=[r for r in runs if r[0]=='test' and r[4] in ('full', 'no_neighbours')]+[r for r in runs if r[0]=='walkforward' and r[1]==10 and r[4]=='full']
 
