@@ -1,8 +1,11 @@
-pandas
-numpy
-requests
-matplotlib
-statsmodels
-jupyter
 astral
+jupyter
+matplotlib
+mlflow
+numpy
+pandas
 pyarrow
+requests
+statsmodels
+tensorflow
+xgboost
