@@ -218,3 +218,18 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---- Project-specific ----
+# Data (raw IBB files are downloaded by src/00_download_data.py)
+data/**
+!data/**/
+!data/**/.gitkeep
+
+# Experiment tracking and model artifacts
+mlruns/
+mlartifacts/
+models/*.keras
+models/*.pkl
+
+# Python
+__pycache__/
