@@ -224,6 +224,8 @@ __marimo__/
 data/**
 !data/**/
 !data/**/.gitkeep
+!data/README.md
+!data/raw/ibb_2024_mahmutbey_area.csv.gz
 
 # Experiment tracking and model artifacts
 mlruns/

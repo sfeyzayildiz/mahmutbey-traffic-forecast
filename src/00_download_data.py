@@ -11,7 +11,12 @@ What it does:
   3. Reads each file in chunks and keeps only the rows inside a bounding box
      around Mahmutbey Junction. Full monthly files are several hundred MB,
      so they are never written to disk.
-  4. Saves the result to data/raw/ibb_2024_mahmutbey_area.csv
+  4. Saves the result to data/raw/ibb_2024_mahmutbey_area.csv.gz
+
+The output of this script is already included in the repository, so running
+it is only needed to reproduce or extend the data.
+
+Data license: IBB Open Data License v1.0 (see data/README.md).
 
 Usage (from the project root):
     pip install requests pandas
@@ -36,7 +41,7 @@ YEAR='2024'
 # neighbouring cells are selected later, in the processing step.
 BBOX={'lat_min':41.00, 'lat_max':41.11, 'lon_min':28.74, 'lon_max':28.90}
 
-OUTPUT_PATH=Path(__file__).resolve().parents[1]/'data'/'raw'/'ibb_2024_mahmutbey_area.csv'
+OUTPUT_PATH=Path(__file__).resolve().parents[1]/'data'/'raw'/'ibb_2024_mahmutbey_area.csv.gz'
 
 
 def list_resources():
