@@ -4,3 +4,5 @@ requests
 matplotlib
 statsmodels
 jupyter
+astral
+pyarrow
