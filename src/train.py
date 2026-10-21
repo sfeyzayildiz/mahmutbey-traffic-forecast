@@ -35,6 +35,33 @@ SEEDS=[1, 2, 3]
 WF_MONTHS=[5, 6, 7, 8, 9, 10]
 
 
+RESULT_COLS=['run_id', 'stage', 'eval_month', 'model', 'horizon', 'ablation', 'seed', 'n', 'MAE', 'RMSE', 'MAPE',
+             'R2', 'pinball', 'PICP90', 'MPIW90', 'PICP50', 'train_seconds', 'best_iteration', 'epochs', 'best_val_loss']
+EXTRA_COLS={'xgboost':['best_iteration'], 'lstm':['epochs', 'best_val_loss']}
+
+
+def load_results(path):
+    '''Read results.csv with a fixed set of columns. Also repairs files written by an
+    earlier version, where XGBoost and LSTM rows had extra fields without a header.'''
+    import csv
+    with open(path, newline='') as fh:
+        rows=list(csv.reader(fh))
+    header, body=rows[0], rows[1:]
+    base=header[:17]
+    records=[]
+    for r in body:
+        rec=dict(zip(base, r[:17]))
+        if len(header)>17:                                   # file already has the fixed columns
+            rec.update(dict(zip(header[17:], r[17:])))
+        else:
+            rec.update(dict(zip(EXTRA_COLS.get(rec['model'], []), r[17:])))
+        records.append(rec)
+    df=pd.DataFrame(records).reindex(columns=RESULT_COLS).replace('', np.nan)
+    num=[c for c in RESULT_COLS if c not in ('run_id', 'stage', 'model', 'ablation')]
+    df[num]=df[num].apply(pd.to_numeric, errors='coerce')
+    return df
+
+
 def drop_cols(columns, ablation):
     cols=list(columns)
     if ablation=='no_neighbours':
@@ -145,8 +172,9 @@ def main():
     csv=out/('results_quick.csv' if args.quick else 'results.csv')
     done=set()
     if csv.exists():
-        prev=pd.read_csv(csv)
-        done={tuple(r) for r in prev[['run_id']].astype(str).values}
+        prev=load_results(csv)
+        prev.to_csv(csv, index=False)                        # rewrite with the fixed columns
+        done=set(prev['run_id'].astype(str))
 
     mlflow=None
     if not args.no_mlflow:
@@ -166,12 +194,12 @@ def main():
     print(f'{len(runs)} runs planned, {len(done)} already done')
     for i, (stage, month, model, h, abl, seed) in enumerate(runs, 1):
         run_id=f'{stage}|{month}|{model}|h{h}|{abl}|s{seed}'
-        if (run_id,) in done:
+        if run_id in done:
             continue
         res, pred=run_one(df, data, stage, month, model, h, abl, seed, args.quick)
         row={'run_id':run_id, 'stage':stage, 'eval_month':month, 'model':model, 'horizon':h,
              'ablation':abl, 'seed':seed, **res}
-        pd.DataFrame([row]).to_csv(csv, mode='a', header=not csv.exists(), index=False)
+        pd.DataFrame([row]).reindex(columns=RESULT_COLS).to_csv(csv, mode='a', header=not csv.exists(), index=False)
         if stage=='test':
             pred.to_parquet(out/'predictions'/f'{model}_h{h}_{abl}_s{seed}.parquet')
         if mlflow:
