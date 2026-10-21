@@ -1,3 +1,6 @@
 pandas
 numpy
 requests
+matplotlib
+statsmodels
+jupyter

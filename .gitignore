@@ -226,6 +226,8 @@ data/**
 !data/**/.gitkeep
 !data/README.md
 !data/raw/ibb_2024_mahmutbey_area.csv.gz
+!data/raw/istanbul_weather_2024.csv
+!data/raw/fuel_panic_hours_2024.csv
 
 # Experiment tracking and model artifacts
 mlruns/
