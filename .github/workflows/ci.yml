@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  tests:
+    name: Data and pipeline tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r app/requirements.txt astral pytest
+      - name: Run tests
+        run: pytest -q
+
+  docker:
+    name: Build demo image
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: docker build -t mahmutbey-demo .
+      - name: Smoke test
+        run: |
+          docker run -d -p 8501:8501 --name demo mahmutbey-demo
+          for i in $(seq 1 30); do curl -sf localhost:8501/_stcore/health && break; sleep 2; done
+          curl -sf localhost:8501/_stcore/health
+          docker stop demo

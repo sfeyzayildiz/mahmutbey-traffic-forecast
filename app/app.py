@@ -108,6 +108,19 @@ with tab_demo:
             measured_txt=f'measured {actual:.0f} km/h' if not np.isnan(actual) else 'not measured'
             col.caption(f"90%: {row['q05']:.0f}–{row['q95']:.0f} km/h · {level_of_service(row['q50'])} · {measured_txt}")
         st.caption('Forecasts use only information available at the chosen hour. Shaded areas: congested (< 30 km/h) and free flow (> 60 km/h).')
+        with st.expander('How to read this chart'):
+            st.markdown('''
+- **The dotted line** is the moment the forecast is made. Everything to its left was already measured; the model
+  has seen nothing to its right.
+- **Blue points** are the forecasts for 1, 2 and 3 hours later (the median of the predicted distribution).
+- **Blue bands** show the uncertainty: the true speed should fall in the light band 90% of the time and in the dark
+  band 50% of the time. The bands were calibrated on September–October data, so these percentages hold in practice.
+- **White circles** show what was really measured later, so you can judge each forecast yourself.
+
+**How the forecast is made.** XGBoost (or the LSTM) uses the last hours of speed at Mahmutbey and at six neighbouring
+road cells, the usual speed for that weekday and hour, the Turkish calendar (holidays, Ramadan, iftar, school days)
+and recent weather. It predicts five quantiles of the future speed; the outer ones form the 90% band.
+''')
 
 with tab_results:
     st.subheader('Test period, November–December 2024 (measured hours only)')

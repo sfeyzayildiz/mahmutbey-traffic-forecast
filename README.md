@@ -1,5 +1,7 @@
 # Mahmutbey Traffic Forecast
 
+[![CI](https://github.com/sfeyzayildiz/mahmutbey-traffic-forecast/actions/workflows/ci.yml/badge.svg)](https://github.com/sfeyzayildiz/mahmutbey-traffic-forecast/actions/workflows/ci.yml)
+
 Forecasting the hourly average traffic speed at **Mahmutbey Junction, Istanbul**, 1 to 3 hours ahead,
 with **calibrated uncertainty intervals**. Built on IBB open data with a leak-free pipeline, walk-forward
 validation and reproducible experiments.
@@ -65,6 +67,12 @@ docker build -t mahmutbey-demo . && docker run -p 8501:8501 mahmutbey-demo
 mlflow ui --backend-store-uri sqlite:///results/mlflow.db
 ```
 
+**Tests** (data quality, chronological split, measured-only targets, no future leakage, calibration, demo app):
+```bash
+pytest -q
+```
+They run automatically on every push, together with a Docker build of the demo (GitHub Actions).
+
 **Reproduce the experiments:** open `notebooks/04_training_colab.ipynb` in Google Colab with a GPU runtime.
 Test results in `results/results.csv` are reproduced exactly by `src/export_predictions.py`.
 
@@ -77,6 +85,7 @@ figures/        all figures (300 dpi)
 notebooks/      01–05
 results/        results.csv, mlflow.db, calibration predictions
 src/            data loading, processing, features, models, training, calibration
+tests/          pipeline tests (run in CI)
 ```
 
 ## Data and licences

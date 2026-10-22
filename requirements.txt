@@ -6,6 +6,7 @@ numpy
 pandas
 plotly
 pyarrow
+pytest
 requests
 statsmodels
 streamlit
