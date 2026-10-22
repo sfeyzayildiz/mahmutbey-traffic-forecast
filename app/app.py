@@ -59,16 +59,16 @@ def level_of_service(speed):
 
 
 def forecast_chart(measured, fc, origin):
-    hist=measured.loc[origin-pd.Timedelta(hours=24):origin]
+    hist=measured.loc[origin-pd.Timedelta(hours=12):origin]
     future=measured.reindex(fc.index)
     fig=go.Figure()
     fig.add_hrect(y0=0, y1=30, fillcolor='#3A1F1F', opacity=0.35, line_width=0)
     fig.add_hrect(y0=60, y1=100, fillcolor='#1B2A1F', opacity=0.35, line_width=0)
     fig.add_trace(go.Scatter(x=hist.index, y=hist.values, mode='lines', line=dict(color=WHITE, width=2), name='Measured (past)'))
     fig.add_trace(go.Scatter(x=list(fc.index)+list(fc.index[::-1]), y=list(fc['q95'])+list(fc['q05'][::-1]),
-                             fill='toself', fillcolor='rgba(76,141,255,0.18)', line=dict(width=0), name='90% interval', hoverinfo='skip'))
+                             mode='none', fill='toself', fillcolor='rgba(76,141,255,0.22)', name='90% interval', hoverinfo='skip'))
     fig.add_trace(go.Scatter(x=list(fc.index)+list(fc.index[::-1]), y=list(fc['q75'])+list(fc['q25'][::-1]),
-                             fill='toself', fillcolor='rgba(76,141,255,0.35)', line=dict(width=0), name='50% interval', hoverinfo='skip'))
+                             mode='none', fill='toself', fillcolor='rgba(76,141,255,0.40)', name='50% interval', hoverinfo='skip'))
     fig.add_trace(go.Scatter(x=fc.index, y=fc['q50'], mode='lines+markers', line=dict(color=BLUE, width=2, dash='dash'),
                              marker=dict(size=9), name='Forecast'))
     fig.add_trace(go.Scatter(x=future.index, y=future.values, mode='markers', marker=dict(color=WHITE, size=10, symbol='circle-open', line=dict(width=2)),
@@ -104,9 +104,9 @@ with tab_demo:
         cols=st.columns(len(fc))
         for col, (t, row) in zip(cols, fc.iterrows()):
             actual=measured.get(t, np.nan)
-            col.metric(f"+{int(row['horizon'])} h · {t:%H:%M}", f"{row['q50']:.0f} km/h",
-                       f"measured {actual:.0f}" if not np.isnan(actual) else 'not measured', delta_color='off')
-            col.caption(f"90%: {row['q05']:.0f}–{row['q95']:.0f} km/h · {level_of_service(row['q50'])}")
+            col.metric(f"+{int(row['horizon'])} h · {t:%H:%M}", f"{row['q50']:.0f} km/h")
+            measured_txt=f'measured {actual:.0f} km/h' if not np.isnan(actual) else 'not measured'
+            col.caption(f"90%: {row['q05']:.0f}–{row['q95']:.0f} km/h · {level_of_service(row['q50'])} · {measured_txt}")
         st.caption('Forecasts use only information available at the chosen hour. Shaded areas: congested (< 30 km/h) and free flow (> 60 km/h).')
 
 with tab_results:
