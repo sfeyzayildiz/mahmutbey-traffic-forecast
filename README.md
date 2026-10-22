@@ -90,5 +90,4 @@ The code is released under the [MIT License](LICENSE).
 
 **Sümmeyye Feyza Yıldız** · Physics Engineering, İstanbul Medeniyet University
 
-Parts of the code and text were written with the help of an AI assistant (Claude). The author defined the research
-questions, made the analysis decisions and reviewed all code and results.
+This repository is a rebuilt and extended version of the author's earlier study. An AI assistant (Claude) helped with parts of the code.
