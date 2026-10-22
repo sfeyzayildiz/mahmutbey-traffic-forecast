@@ -4,6 +4,8 @@ Forecasting the hourly average traffic speed at **Mahmutbey Junction, Istanbul**
 with **calibrated uncertainty intervals**. Built on IBB open data with a leak-free pipeline, walk-forward
 validation and reproducible experiments.
 
+**[▶ Live demo](https://mahmutbey-traffic.streamlit.app)** — replay the test-period forecasts in your browser.
+
 <p align="center">
   <img src="figures/fig21_example_week.png" width="88%" alt="One test week: measured speed, forecast and calibrated 90% interval, 1 and 3 hours ahead">
 </p>

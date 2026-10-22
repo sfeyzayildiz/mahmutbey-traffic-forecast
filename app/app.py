@@ -100,7 +100,7 @@ with tab_demo:
     if fc.empty:
         st.info('No forecast for this moment: the IBB system had no data at the target hours (outage). Try another hour or day.')
     else:
-        st.plotly_chart(forecast_chart(measured, fc, origin), width='stretch')
+        st.plotly_chart(forecast_chart(measured, fc, origin), width='stretch', theme=None)
         cols=st.columns(len(fc))
         for col, (t, row) in zip(cols, fc.iterrows()):
             actual=measured.get(t, np.nan)
