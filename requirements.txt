@@ -4,8 +4,10 @@ matplotlib
 mlflow
 numpy
 pandas
+plotly
 pyarrow
 requests
 statsmodels
+streamlit
 tensorflow
 xgboost
