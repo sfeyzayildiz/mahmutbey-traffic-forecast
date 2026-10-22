@@ -1,0 +1,7 @@
+.git
+data
+notebooks
+results/mlflow.db
+results/results.csv
+**/__pycache__
+*.ipynb
